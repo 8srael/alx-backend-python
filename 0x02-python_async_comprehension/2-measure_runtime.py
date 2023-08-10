@@ -15,6 +15,6 @@ async def measure_runtime() -> float:
     """ Measures the total execution time for wait_n(n, max_delay) """
     start_time = time.time()
     await asyncio.gather(
-        *(async_comprehension() for _ in range(4))
+        *[async_comprehension() for _ in range(4)]
     )
     return (time.time() - start_time)   
