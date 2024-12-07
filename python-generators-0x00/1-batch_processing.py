@@ -17,7 +17,7 @@ def stream_users_in_batches(batch_size: int):
     cursor.execute("SELECT user_id, name, email, age FROM user_data")
 
     while True:
-        rows = cursor.fetchmany(size=batch_size)
+        rows = cursor.fetchmany(batch_size)
         if not rows:
             break
         yield rows
@@ -33,4 +33,4 @@ def batch_processing(batch_size: int):
     
     for batch in stream_users_in_batches(batch_size):
         filtered_batch = [row for row in batch if row[3] > 25]
-        yield filtered_batch     
+        yield filtered_batch
