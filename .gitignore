@@ -3,3 +3,4 @@ env/*
 */__pycache__/
 0x01-python_async_function/1-concurrent_coroutines_mine.py
 db.sql
+*.db

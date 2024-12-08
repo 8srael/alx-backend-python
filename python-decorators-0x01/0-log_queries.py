@@ -1,6 +1,6 @@
 import sqlite3
 import functools
-
+from datetime import datetime
 #### decorator to lof SQL queries
 
 """ YOUR CODE GOES HERE"""
@@ -10,7 +10,7 @@ def log_queries(func):
         # Récupère le paramètre 'query' passé à la fonction décorée
         query = kwargs.get('query', None)
         if query:
-            print(f"Executing SQL Query: {query}")
+            print(f"[{datetime.now()}] {query}")
         return func(*args, **kwargs)
     return wrapper
 
