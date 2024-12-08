@@ -32,5 +32,7 @@ def batch_processing(batch_size: int):
     """
     
     for batch in stream_users_in_batches(batch_size):
-        filtered_batch = [row for row in batch if row[3] > 25]
-        yield filtered_batch
+        for row in batch:
+            if row[3] > 25:
+                print({'user_id': row[0], 'name': row[1], 'email': row[2], 'age': row[3]}, end="\n\n")
+        return None
