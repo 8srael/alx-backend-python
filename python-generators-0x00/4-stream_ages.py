@@ -4,8 +4,8 @@ seed = __import__('seed')
 
 def stream_user_ages():
     """
-    Generator that connects to the database and yields user ages one by one.
-    This uses one loop to iterate over all rows returned by the cursor.
+        Generator that connects to the database and yields user ages one by one.
+        This uses one loop to iterate over all rows returned by the cursor.
     """
     conn = seed.connect_to_prodev()
     cursor = conn.cursor()
@@ -18,7 +18,7 @@ def stream_user_ages():
     cursor.close()
     conn.close()
 
-def compute_average_age():
+def compute_average_age(): 
     """
     Uses the stream_user_ages generator to compute the average age.
     This will sum and count the ages without storing them all in memory.
