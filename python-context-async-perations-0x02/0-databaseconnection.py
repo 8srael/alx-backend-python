@@ -4,6 +4,10 @@ class DatabaseConnection():
     """
         Context manager class for database connection
     """
+    
+    def __init__(self):
+        self.conn = None
+    
     def __enter__(self):
         self.conn = mysql.connector.connect(
             host="localhost",
