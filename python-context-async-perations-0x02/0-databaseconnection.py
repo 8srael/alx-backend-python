@@ -5,21 +5,24 @@ class DatabaseConnection():
         Context manager class for database connection
     """
     
-    def __init__(self):
-        self.conn = None
+    def __init__(self, user, host, password, database):
+        self.user = user
+        self.host = host
+        self.password = password
+        self.database = database
     
     def __enter__(self):
-        self.conn = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="ALX_prodev"
+        self.connection = mysql.connector.connect(
+            user=self.user,
+            host=self.host,
+            password=self.password,
+            database=self.database
         )
         
-        return self.conn
+        return self.connection
     
     def __exit__(self, exc_type, exc_value, traceback):
-        self.conn.close()
+        self.connection.close()
         if exc_type is not None:
             return False
         return True
@@ -27,7 +30,7 @@ class DatabaseConnection():
 # Usage
 
 if __name__ == "__main__":
-    with DatabaseConnection() as connection:
+    with DatabaseConnection('root', 'localhost', '', 'ALX_prodev') as connection:
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM users")
         for row in cursor.fetchall():
