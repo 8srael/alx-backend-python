@@ -64,7 +64,7 @@ def memoize(fn: Callable) -> Callable:
     42
     """
     attr_name = "_{}".format(fn.__name__)
-
+    
     @wraps(fn)
     def memoized(self):
         """"memoized wraps"""

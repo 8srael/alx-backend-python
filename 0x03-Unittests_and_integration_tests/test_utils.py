@@ -9,12 +9,13 @@ import unittest
 from unittest.mock import patch
 from parameterized import parameterized
 from utils import access_nested_map, get_json, memoize
-from typing import Dict, Tuple, List, Union
+from typing import Dict, Tuple, List, Union, Sequence, Mapping
 
 
 class TestAccessNestedMap(unittest.TestCase):
     """ Class for testing nested map function"""
 
+    # Task 0. Test access_nested_map function
     @parameterized.expand([
         ({"a": 1}, ("a",), 1),
         ({"a": {"b": 2}}, ("a",), {"b": 2}),
@@ -22,13 +23,14 @@ class TestAccessNestedMap(unittest.TestCase):
     ])
     def test_access_nested_map(
         self,
-        nested_map: Dict,
-        path: Tuple[str],
+        nested_map: Mapping,
+        path: Sequence,
         expected: Union[Dict, int]
     ) -> None:
         """ Test access nested map function"""
         self.assertEqual(access_nested_map(nested_map, path), expected)
 
+    # Task 1. Test access_nested_map function exception
     @parameterized.expand([
         ({}, ("a",), KeyError),
         ({"a": 1}, ("a", "b"), KeyError)
@@ -39,11 +41,12 @@ class TestAccessNestedMap(unittest.TestCase):
             access_nested_map(nested_map, path)
 
 
+# Task 2. Test get_json function (mocking HTTP calls)
 class TestGetJson(unittest.TestCase):
     """ Class for testing get_json function"""
 
     @parameterized.expand([
-        ("http://example.com", {"payload": True}),
+        ("http://example.com", {}),
         ("http://holberton.io", {"payload": False})
     ])
     def test_get_json(self, test_url: str, test_payload: Dict) -> None:
