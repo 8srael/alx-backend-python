@@ -18,7 +18,7 @@ def stream_user_ages():
     cursor.close()
     conn.close()
 
-def compute_average_age(): 
+def compute_age(): 
     """
     Uses the stream_user_ages generator to compute the average age.
     This will sum and count the ages without storing them all in memory.
@@ -30,13 +30,9 @@ def compute_average_age():
         total_age += age
         count += 1
     
-    if count > 0:
-        average_age = total_age / count
-    else:
-        average_age = 0
-
-    print(f"Average age of users: {average_age}")
+    return total_age / count if count > 0 else 0
 
 # Example usage
 if __name__ == "__main__":
-    compute_average_age()
+        print(f"Average age of users: {compute_age()}")
+
