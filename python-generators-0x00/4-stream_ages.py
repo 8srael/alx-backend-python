@@ -34,5 +34,5 @@ def compute_age():
 
 # Example usage
 if __name__ == "__main__":
-        print(f"Average age of users: {compute_age()}")
+        print(f"Avg age of users: {compute_age()}")
 
