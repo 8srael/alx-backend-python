@@ -33,7 +33,7 @@ class TestGithubOrgClient(unittest.TestCase):
 
 
 
-    def test_publc_repos_url(self) -> None:
+    def test_public_repos_url(self) -> None:
         """
             Test that the _public_repos_url method returns the correct value.
         """
