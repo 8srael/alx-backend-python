@@ -74,7 +74,7 @@ class TestGithubOrgClient(unittest.TestCase):
         ({"key": "my_license"}, "my_license", True),
         ({"key": "other_license"}, "my_license", False),
     ])
-    def has_license_test(self, repo: Dict[str, Dict],
+    def test_has_license(self, repo: Dict[str, Dict],
                          license_key: str, expected: bool) -> None:
         """
             Test that the has_license method returns the expected Bool value.
