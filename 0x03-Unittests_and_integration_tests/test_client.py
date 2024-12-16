@@ -9,6 +9,7 @@ from unittest.mock import patch
 from parameterized import parameterized
 from client import GithubOrgClient
 from unittest.mock import PropertyMock
+from typing import Dict
 
 class TestGithubOrgClient(unittest.TestCase):
     """ Class for testing GithubOrgClient """
@@ -49,10 +50,11 @@ class TestGithubOrgClient(unittest.TestCase):
             Test that the public_repos method returns the correct value.
         """
         mock_url = "http://api.github.com/orgs/google/repos"
-        with patch('client.GithubOrgClient._public_repos_url', new_callable=PropertyMock, return_value=mock_url) as mock_public_repos_url:
+        with patch('client.GithubOrgClient._public_repos_url', new_callable=PropertyMock,
+                return_value=mock_url) as mock_public_repos_url:
             client = GithubOrgClient('google')
             repos = client.public_repos()
-           
+
             # We expect the method to return ['repo1', 'repo2'] based on the mocked payload
             self.assertEqual(repos, ['repo1', 'repo2'])
 
@@ -61,3 +63,13 @@ class TestGithubOrgClient(unittest.TestCase):
 
             # Check that get_json was called once with the mocked URL
             mock_get_json.assert_called_once_with(mock_url)
+
+    @parameterized.expand([
+        ({"key": "my_license"}, "my_license", True),
+        ({"key": "other_license"}, "my_license", False),
+    ])
+    def has_license(self, repo:Dict[str, Dict], license_key:str, expected:bool)-> None:
+        """
+            Test that the has_license method returns the expected Bool value.
+        """
+        self.assertEqual(GithubOrgClient.has_license(repo, license_key), expected)
