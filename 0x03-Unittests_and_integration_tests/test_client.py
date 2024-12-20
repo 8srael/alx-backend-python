@@ -71,9 +71,9 @@ class TestGithubOrgClient(unittest.TestCase):
             mock_get_json.assert_called_once_with(mock_url)
 
     @parameterized.expand([
-        ({"key": "my_license"}, "my_license", True),
-        ({"key": "other_license"}, "my_license", False),
-    ])
+        ({'license': {'key': 'my_license'}}, 'my_license', True),
+        ({'license': {'key': 'other_license'}}, 'my_license', False)
+    ])  
     def test_has_license(self, repo: Dict[str, Dict],
                          license_key: str, expected: bool) -> None:
         """
