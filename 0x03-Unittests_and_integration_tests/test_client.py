@@ -75,7 +75,7 @@ class TestGithubOrgClient(unittest.TestCase):
     @parameterized.expand([
         ({'license': {'key': 'my_license'}}, 'my_license', True),
         ({'license': {'key': 'other_license'}}, 'my_license', False)
-    ])  
+    ])
     def test_has_license(self, repo: Dict[str, Dict],
                          license_key: str, expected: bool) -> None:
         """
@@ -83,6 +83,7 @@ class TestGithubOrgClient(unittest.TestCase):
         """
         self.assertEqual(GithubOrgClient.has_license(repo, license_key),
                          expected)
+
 
 @parameterized_class(
     ('org_payload', 'repos_payload', 'expected_repos', 'apache2_repos'),
