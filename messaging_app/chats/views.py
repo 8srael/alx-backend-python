@@ -1,14 +1,21 @@
+from django.shortcuts import render
+
 # Create your views here.
 
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, filters
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from .models import Conversation, Message
 from .serializers import ConversationSerializer, MessageSerializer
+from django_filters.rest_framework import DjangoFilterBackend
 
 class ConversationViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all()
     serializer_class = ConversationSerializer
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
+    filterset_fields = ['participants']  # Filtrer par participants
+    search_fields = ['participants__first_name', 'participants__last_name']
+    ordering_fields = ['created_at']
 
     def create(self, request, *args, **kwargs):
         """
@@ -23,6 +30,9 @@ class ConversationViewSet(viewsets.ModelViewSet):
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filterset_fields = ['conversation', 'sender']
+    ordering_fields = ['sent_at']
 
     def create(self, request, *args, **kwargs):
         """
