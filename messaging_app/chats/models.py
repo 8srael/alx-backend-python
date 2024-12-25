@@ -9,7 +9,7 @@ class user(AbstractUser):
     user_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(unique=True, null=False, blank=False)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
-    password_hash =  models.CharField(max_length=128, null=False, blank=False)
+    password =  models.CharField(max_length=128, null=False, blank=False)
     role = models.CharField(
         max_length=10,
         choices=[('guest', 'Guest'), ('host', 'Host'), ('admin', 'Admin')],
@@ -22,7 +22,7 @@ class user(AbstractUser):
         related_name="groups", 
         blank=True,
     )
-    permissions = models.ManyToManyField(
+    user_permissions = models.ManyToManyField(
         Permission,
         related_name="permissions",
         blank=True,
