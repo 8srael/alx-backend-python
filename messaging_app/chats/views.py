@@ -10,6 +10,7 @@ from .serializers import ConversationSerializer, MessageSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsParticipantOfConversation
+from .filters import MessageFilter
 
 class ConversationViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all()
@@ -41,6 +42,7 @@ class MessageViewSet(viewsets.ModelViewSet):
     filterset_fields = ['conversation', 'sender']
     ordering_fields = ['sent_at']
     permission_classes = [IsAuthenticated, IsParticipantOfConversation]
+    filterset_class = MessageFilter
     
     def get_queryset(self):
         # Only show messages in conversations the user is part of
