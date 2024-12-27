@@ -2,9 +2,9 @@
 
 from rest_framework.permissions import BasePermission
 
-class IsParticipant(BasePermission):
+class IsParticipantOfConversation(BasePermission):
     """
-    Permet l'accès aux conversations seulement pour les participants.
+        Only participants of a conversation can access it.
     """
 
     def has_object_permission(self, request, view, obj):
