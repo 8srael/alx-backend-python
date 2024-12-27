@@ -16,6 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
         return f"{obj.first_name} {obj.last_name}"  # Custom logic to compute the full name
 
 class MessageSerializer(serializers.ModelSerializer):
+    sender = serializers.StringRelatedField()  # Include sender as StringRelatedField
     sender_email = serializers.CharField(source='sender.email', read_only=True)  # Include sender email as CharField
 
     class Meta:

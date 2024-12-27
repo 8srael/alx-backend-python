@@ -8,6 +8,7 @@ from rest_framework.decorators import action
 from .models import Conversation, Message
 from .serializers import ConversationSerializer, MessageSerializer
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.permissions import IsAuthenticated
 
 class ConversationViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all()
@@ -16,6 +17,11 @@ class ConversationViewSet(viewsets.ModelViewSet):
     filterset_fields = ['participants']  # Filtrer par participants
     search_fields = ['participants__first_name', 'participants__last_name']
     ordering_fields = ['created_at']
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        # Only show conversations the user part of
+        return Conversation.objects.filter(participants=self.request.user)
 
     def create(self, request, *args, **kwargs):
         """
@@ -33,6 +39,11 @@ class MessageViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = ['conversation', 'sender']
     ordering_fields = ['sent_at']
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        # Only show messages in conversations the user is part of
+        return Message.objects.filter(conversation__participants=self.request.user)
 
     def create(self, request, *args, **kwargs):
         """
