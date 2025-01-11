@@ -1,9 +1,16 @@
-from django.shortcuts import render
-from django.shortcuts import get_object_or_404
-from .models import Message, MessageHistory, Notification
+from rest_framework import viewsets
+from rest_framework.response import Response
+from rest_framework.decorators import action
+from .models import Message
+from .serializers import MessageSerializer
 
-# Create your views here.
-def view_message_history(request, message_id):
-    message = get_object_or_404(Message, id=message_id)
-    history = message.history.all()
-    return render(request, 'message_history.html', {'message': message, 'history': history})
+class MessageViewSet(viewsets.ModelViewSet):
+    queryset = Message.objects.all()
+    serializer_class = MessageSerializer
+
+    @action(detail=True, methods=['get'])
+    def history(self, request, pk=None):
+        message = self.get_object()
+        history = message.history.all()
+        serializer = self.get_serializer(history, many=True)
+        return Response(serializer.data)
