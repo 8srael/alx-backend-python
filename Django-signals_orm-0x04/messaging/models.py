@@ -22,7 +22,7 @@ class Notification(models.Model):
         return f"Notification for {self.user} at {self.timestamp}"
     
 
-class MessageHistroy(models.Model):
+class MessageHistory(models.Model):
     message = models.ForeignKey(Message, on_delete=models.CASCADE)
     content = models.TextField()
     edited_at = models.DateTimeField(auto_now_add=True)
