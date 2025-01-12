@@ -39,10 +39,13 @@ class DeleteUserView(APIView):
 @cache_page(60)
 class ThreadedConversationView(APIView):
     def get(self, request, conversation_id):
-        messages = Message.objects.filter(parent_message=None, receiver_id=conversation_id).prefetch_related(
+        sender=request.user
+        
+        messages = Message.objects.filter(parent_message=None, receiver_id=conversation_id, sender=sender).prefetch_related(
             'replies__replies',
         ).select_related('sender', 'receiver')
-
+        
+        
         data = [
             {
                 "id": message.id,
