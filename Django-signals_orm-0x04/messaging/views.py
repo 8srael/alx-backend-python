@@ -32,8 +32,8 @@ class DeleteUserView(APIView):
     permission_classes = [IsAuthenticated]
     
     def delete_user(self, request):
-        user = request.user
-        user.delete()
+        sender = request.user
+        sender.delete()
         return Response({"message": "Your User account has been deleted successfully"}, status=status.HTTP_200_OK)
   
 @cache(60)
@@ -41,9 +41,9 @@ class ThreadedConversationView(APIView):
     def get(self, request, message_id):
         try:
             # Fetch the main message
-            message = Message.objects.prefetch_related(
-                Prefetch('replies', queryset=Message.objects.select_related('sender', 'receiver'))
-            ).get(id=message_id)
+            message = Message.objects.filter(id=message_id).prefetch_related(
+                Prefetch('replies', queryset=Message.objects.select_related('sender').all())
+            ).get()
             
             # Get the threaded replies
             conversation = {
