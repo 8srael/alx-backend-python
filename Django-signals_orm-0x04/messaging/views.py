@@ -38,22 +38,22 @@ class DeleteUserView(APIView):
   
 @cache(60)
 class ThreadedConversationView(APIView):
-    def get(self, request, message_id):
-        try:
-            # Fetch the main message
-            message = Message.objects.filter(id=message_id).prefetch_related(
-                Prefetch('replies', queryset=Message.objects.select_related('sender').all())
-            ).get()
-            
-            # Get the threaded replies
-            conversation = {
-                'message': message,
-                'replies': self.get_threaded_replies(message)
+    def get(self, request, conversation_id):
+        messages = Message.objects.filter(parent_message=None, receiver_id=conversation_id).prefetch_related(
+            'replies__replies',
+        ).select_related('sender', 'receiver')
+
+        data = [
+            {
+                "id": message.id,
+                "content": message.content,
+                "timestamp": message.timestamp,
+                "replies": self.get_threaded_replies(message)
             }
-            
-            return Response(conversation, status=200)
-        except Message.DoesNotExist:
-            return Response({'error': 'Message not found'}, status=404)
+            for message in messages
+        ]
+        return Response(data, status=status.HTTP_200_OK)
+
         
     def get_threaded_replies(self, message):
         """
