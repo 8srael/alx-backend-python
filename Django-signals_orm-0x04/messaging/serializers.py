@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Message, MessageHistory
+from django.contrib.auth.models import User
 
 class MessageHistorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -12,3 +13,8 @@ class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
         fields = ['id', 'content', 'user', 'edited', 'created_at', 'updated_at', 'history']
+        
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email']
