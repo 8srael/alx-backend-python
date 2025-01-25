@@ -18,3 +18,8 @@ EXPOSE 8000
 
 # Run Django server by default (replace 'messaging' with your project name if different)
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+
+# Build the Docker image
+# docker build -t messaging-app .
+# Run the Docker container
+# docker run -d -p 8000:8000 --name messaging-container messaging-app
