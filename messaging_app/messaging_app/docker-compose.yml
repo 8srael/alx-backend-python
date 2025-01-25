@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: messaging_web
-    command: python manage.py runserver 0.0.0.0:8000
+    command: python3 manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
     volumes:
@@ -14,11 +14,12 @@ services:
     depends_on:
       - db
     environment:
-      - DATABASE_NAME=${DATABASE_NAME}
-      - DATABASE_USER=${DATABASE_USER}
-      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
-      - DATABASE_HOST=db
-      - DATABASE_PORT=${DATABASE_PORT}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DB=${MYSQL_DB}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_HOST=db
+      - MYSQL_PORT=${MYSQL_PORT}
 
   db:
     image: mysql:8
@@ -26,10 +27,11 @@ services:
     ports:
       - "3306:3306"
     environment:
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-      DATABASE_NAME: ${DATABASE_NAME}
-      DATABASE_USER: ${DATABASE_USER}
-      DATABASE_HOST: ${DATABASE_HOST}
+      MYSQL_DB: ${MYSQL_DB}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_HOST: db
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - db_data:/var/lib/mysql
 
@@ -39,3 +41,5 @@ volumes:
 
 # run containers with docker-compose and .env file
 # docker-compose --env-file .env up --build
+
+messaging_app/docker-compose.yml doesn't contain: ["MYSQL_USER", "MYSQL_DB", "MYSQL_PASSWORD"]
