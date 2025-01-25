@@ -1,0 +1,59 @@
+pipeline {
+    agent any
+
+    environment {
+        // Define the Python environment variables
+        PYTHON_ENV = "python3"
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git credentialsId: 'github-credentials', url: 'https://github.com/your-username/alx-backend-python.git', branch: 'main'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                script {
+                    // Install necessary dependencies in the environment
+                    sh """
+                    ${PYTHON_ENV} -m venv venv
+                    source venv/bin/activate
+                    pip install -r messaging_app/requirements.txt
+                    """
+                }
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                script {
+                    // Run tests using pytest
+                    sh """
+                    source venv/bin/activate
+                    pytest --maxfail=1 --disable-warnings --output=pytest_report.xml
+                    """
+                }
+            }
+        }
+
+        stage('Generate Test Report') {
+            steps {
+                script {
+                    // Archive the test result
+                    junit '**/pytest_report.xml'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'The pipeline completed successfully.'
+        }
+        failure {
+            echo 'The pipeline failed.'
+        }
+    }
+}
