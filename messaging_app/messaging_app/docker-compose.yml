@@ -1,0 +1,41 @@
+version: '3.9'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: messaging_web
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    environment:
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_HOST=db
+      - DATABASE_PORT=${DATABASE_PORT}
+
+  db:
+    image: mysql:8
+    container_name: messaging_db
+    ports:
+      - "3306:3306"
+    environment:
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_HOST: ${DATABASE_HOST}
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
+
+
+# run containers with docker-compose and .env file
+# docker-compose --env-file .env up --build
