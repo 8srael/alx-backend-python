@@ -1,0 +1,86 @@
+pipeline {
+    agent any
+
+    environment {
+        // Define environment variables for Docker
+        DOCKER_IMAGE = "your-dockerhub-username/django-messaging-app"
+        DOCKER_TAG = "latest"
+        PYTHON_ENV = "python3"
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git credentialsId: 'github-credentials', url: 'https://github.com/your-username/alx-backend-python.git', branch: 'main'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                script {
+                    // Install necessary dependencies in the environment
+                    sh """
+                    ${PYTHON_ENV} -m venv venv
+                    source venv/bin/activate
+                    pip3 install -r messaging_app/requirements.txt
+                    """
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Build the Docker image for the Django app
+                    sh """
+                    docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} messaging_app/
+                    """
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    // Log in to Docker Hub
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                        sh """
+                        echo \$DOCKER_PASSWORD | docker login -u \$DOCKER_USERNAME --password-stdin
+                        docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                script {
+                    // Run tests using pytest
+                    sh """
+                    source venv/bin/activate
+                    pytest --maxfail=1 --disable-warnings --output=pytest_report.xml
+                    """
+                }
+            }
+        }
+
+        stage('Generate Test Report') {
+            steps {
+                script {
+                    // Archive the test result using JUnit
+                    junit '**/pytest_report.xml'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'The pipeline completed successfully.'
+        }
+        failure {
+            echo 'The pipeline failed.'
+        }
+    }
+}
