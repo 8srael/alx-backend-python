@@ -1,0 +1,57 @@
+#!/bin/bash
+
+# Check if kubectl is installed
+if ! command -v kubectl &> /dev/null; then
+    echo "kubectl is not installed. Please install it before running this script."
+    exit 1
+fi
+
+# Check if wrk is installed
+if ! command -v wrk &> /dev/null; then
+    echo "wrk is not installed. Please install it before running this script."
+    exit 1
+fi
+
+# Step 1: Scale the deployment to 3 replicas
+echo "Scaling the Django app deployment to 3 replicas..."
+kubectl scale deployment messaging-app --replicas=3
+if [ $? -ne 0 ]; then
+    echo "Failed to scale the deployment. Please check your deployment configuration."
+    exit 1
+fi
+
+# Step 2: Verify that multiple pods are running
+echo "Verifying the pods status..."
+kubectl get pods -l app=messaging-app
+if [ $? -ne 0 ]; then
+    echo "Failed to retrieve pods. Ensure your deployment is running correctly."
+    exit 1
+fi
+
+# Step 3: Perform load testing using wrk
+echo "Starting load testing with wrk..."
+# Port-forward the service to access it locally
+kubectl port-forward svc/messaging-app-service 8000:8000 &
+PORT_FORWARD_PID=$!
+sleep 5  # Give some time for the port-forwarding to start
+
+# Run wrk for load testing
+wrk -t4 -c50 -d30s http://localhost:8000/
+if [ $? -ne 0 ]; then
+    echo "Failed to perform load testing. Ensure your app is accessible at localhost:8000."
+    kill $PORT_FORWARD_PID
+    exit 1
+fi
+
+# Stop port-forwarding
+kill $PORT_FORWARD_PID
+
+# Step 4: Monitor resource usage
+echo "Monitoring resource usage..."
+kubectl top pods -l app=messaging-app
+if [ $? -ne 0 ]; then
+    echo "Failed to monitor resource usage. Ensure metrics-server is installed in your cluster."
+    exit 1
+fi
+
+echo "Scaling, load testing, and resource monitoring completed successfully!"
