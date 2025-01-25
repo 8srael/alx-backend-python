@@ -1,13 +1,46 @@
-from django.contrib.auth.models import AbstractUser, Group, Permission
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.db import models
 import uuid
 
 # Create your models here.
 
-# user Model that extends AbstractUser
-class user(AbstractUser):
+class UserManager(BaseUserManager):
+
+    def create_superuser(self, email, username, first_name, last_name, password, **other_fields):
+        other_fields.setdefault('is_staff', True)
+        other_fields.setdefault('is_superuser', True)
+        other_fields.setdefault('is_active', True)
+        
+        if other_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        
+        if other_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+        
+        return self.create_user(email, username, first_name, last_name, password, **other_fields)
+
+    def create_user(self, email, username, first_name, last_name, password, **other_fields):
+        
+        if not email:
+            raise ValueError("You must provide an email address")
+        
+        email = self.normalize_email(email)
+        user = self.model(email=email, username=username, first_name=first_name, last_name=last_name, **other_fields)
+        user.set_password(password)
+        user.save()
+        return user
+    
+    
+
+# user Model that extends AbstracBaseUser
+class user(AbstractBaseUser, PermissionsMixin):
     user_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(unique=True, null=False, blank=False)
+    username = models.CharField(max_length=150, unique=True, null=False, blank=False)
+    first_name = models.CharField(max_length=150, null=False, blank=False)
+    last_name = models.CharField(max_length=150, null=False, blank=False)
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     password =  models.CharField(max_length=128, null=False, blank=False)
     role = models.CharField(
@@ -17,19 +50,12 @@ class user(AbstractUser):
         null=False,
         blank=False
     )
-    groups = models.ManyToManyField(
-        Group,
-        related_name="groups", 
-        blank=True,
-    )
-    user_permissions = models.ManyToManyField(
-        Permission,
-        related_name="permissions",
-        blank=True,
-    )
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    objects = UserManager()
 
     USERNAME_FIELD = 'email'
+    # REQUIRED_FIELDS = []
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
     
     @property

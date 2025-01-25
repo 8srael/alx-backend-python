@@ -36,6 +36,11 @@ ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'chats.user'
 
+AUTHENTICATION_BACKENDS = [
+    'chats.backends.UUIDAuthBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 # Application definition
 
 INSTALLED_APPS = [
