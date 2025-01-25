@@ -41,5 +41,3 @@ volumes:
 
 # run containers with docker-compose and .env file
 # docker-compose --env-file .env up --build
-
-messaging_app/docker-compose.yml doesn't contain: ["MYSQL_USER", "MYSQL_DB", "MYSQL_PASSWORD"]
