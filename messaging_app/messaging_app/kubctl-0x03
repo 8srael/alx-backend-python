@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Apply the updated blue deployment file to trigger the rolling update
+echo "Applying blue deployment update (version 2.0)"
+kubectl apply -f messaging_app/blue_deployment.yaml
+
+# Monitor the progress of the rolling update
+echo "Monitoring the rolling update"
+kubectl rollout status deployment/messaging-app-blue
+
+# Continuous curl request to test for downtime or disruption
+echo "Testing the app for downtime or disruption using curl"
+while true; do
+  response=$(curl -s -o /dev/null -w "%{http_code}" http://messaging-app-service:8000)
+  if [ "$response" -ne 200 ]; then
+    echo "App is down or returning non-200 status: $response"
+    break
+  fi
+  echo "App is up, status: $response"
+  sleep 1
+done
+
+# Verify that the rolling update has completed
+echo "Verifying the current pods after the rolling update"
+kubectl get pods
