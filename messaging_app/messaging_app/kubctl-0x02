@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Apply blue deployment
+echo "Applying blue deployment"
+kubectl apply -f messaging_app/blue_deployment.yaml
+
+# Apply green deployment
+echo "Applying green deployment"
+kubectl apply -f messaging_app/green_deployment.yaml
+
+# Apply service
+echo "Applying service"
+kubectl apply -f messaging_app/kubeservice.yaml
+
+# Check the pods to ensure deployments are running
+echo "Checking pods"
+kubectl get pods
+
+# Check logs of the green deployment (new version)
+echo "Checking logs for green deployment"
+GREEN_POD=$(kubectl get pods -l version=green -o jsonpath='{.items[0].metadata.name}')
+kubectl logs $GREEN_POD
+
+# Optionally, scale up the green deployment and scale down the blue deployment for zero downtime
+echo "Scaling green deployment to 3 replicas"
+kubectl scale deployment messaging-app-green --replicas=3
+
+echo "Scaling down blue deployment"
+kubectl scale deployment messaging-app-blue --replicas=0
+
+# Verify the final state of the pods
+echo "Final pod status"
+kubectl get pods
