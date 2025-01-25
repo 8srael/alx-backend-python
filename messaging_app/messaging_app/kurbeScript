@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# kurbeScript - A script to set up and verify a Kubernetes cluster locally with Minikube.
+
+# Ensure the script is run with sufficient privileges
+if [[ $EUID -ne 0 ]]; then
+   echo "Please run this script as root or use sudo."
+   exit 1
+fi
+
+# Step 1: Check if Minikube is installed
+if ! command -v minikube &>/dev/null; then
+    echo "Minikube is not installed. Installing Minikube..."
+    curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+    chmod +x minikube
+    mv minikube /usr/local/bin/
+    echo "Minikube installed successfully!"
+else
+    echo "Minikube is already installed."
+fi
+
+# Step 2: Check if kubectl is installed
+if ! command -v kubectl &>/dev/null; then
+    echo "kubectl is not installed. Installing kubectl..."
+    curl -LO "https://dl.k8s.io/release/$(curl -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    chmod +x kubectl
+    mv kubectl /usr/local/bin/
+    echo "kubectl installed successfully!"
+else
+    echo "kubectl is already installed."
+fi
+
+# Step 3: Start Minikube
+echo "Starting Minikube..."
+minikube start
+if [[ $? -ne 0 ]]; then
+    echo "Failed to start Minikube. Please check the logs for details."
+    exit 1
+fi
+echo "Minikube started successfully."
+
+# Step 4: Verify the Kubernetes cluster
+echo "Verifying the Kubernetes cluster..."
+kubectl cluster-info
+if [[ $? -ne 0 ]]; then
+    echo "Cluster verification failed. Please ensure Minikube is running properly."
+    exit 1
+fi
+
+# Step 5: Retrieve the available pods
+echo "Retrieving available pods..."
+kubectl get pods --all-namespaces
+
+# Step 6: Print success message
+echo "Kubernetes cluster setup and verification completed successfully!"
